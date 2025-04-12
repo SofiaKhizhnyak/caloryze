@@ -1,0 +1,229 @@
+.calendar-container {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 12px;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.calendar-header h2 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #333333c6;
+}
+
+.calendar-header ion-button {
+  margin: 0;
+}
+
+.weekday-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.weekday-header ion-col {
+  display: flex;
+  flex: 1 1 0%;
+  justify-content: center;
+  align-items: center;
+}
+
+.weekday-header ion-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.calendar-days ion-row {
+  margin-bottom: 0.5rem;
+}
+
+.calendar-day {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+}
+
+.calendar-day ion-button {
+  --border-radius: 50%;
+  height: 36px;
+  width: 36px;
+  margin: 2px;
+  --padding-start: 0;
+  --padding-end: 0;
+  font-weight: 500;
+}
+
+.calendar-day ion-button::part(native) {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.calendar-day-inactive {
+  height: 36px;
+  width: 36px;
+  margin: 2px;
+}
+
+.calendar-button::part(native) {
+  border-radius: 50%;
+  height: auto;
+  width: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+}
+
+.current-day {
+  font-size: 1rem;
+  --background: linear-gradient(300deg, #c24101 0%, #e27203 100%);
+  --color: #fff;
+  --border-color: transparent;
+}
+
+.current-day::part(native) {
+  background: linear-gradient(300deg, #c24101 0%, #e27203 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+.past-day-success::part(native) {
+  border: none;
+  background-color: rgba(153, 241, 188, 0.589);
+}
+
+.past-day-fail::part(native) {
+  border: none;
+  background-color: rgba(254, 183, 183, 0.66);
+}
+
+.day-modal ion-card {
+  margin: 1rem;
+  padding: 0.5rem;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+ion-modal {
+  --border-radius: 13px;
+  --height: 65%;
+}
+
+.custom-card-title {
+  font-size: 1.2rem;
+  color: #23033988;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: 0.25rem;
+  }
+
+  .calendar-header h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .calendar-day {
+    height: 36px;
+    padding: 0;
+  }
+
+  .calendar-day ion-button {
+    height: 32px;
+    width: 32px;
+  }
+
+  .calendar-day-inactive {
+    height: 32px;
+    width: 32px;
+  }
+
+  .calendar-button::part(native) {
+    height: 32px;
+    width: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-container {
+    padding: 0.15rem;
+  }
+
+  .weekday-header {
+    margin-bottom: 0.25rem;
+    padding: 0.25rem 0;
+  }
+
+  .weekday-header ion-text {
+    font-size: 0.65rem;
+  }
+
+  .calendar-day {
+    height: 30px;
+  }
+
+  .calendar-day ion-button {
+    height: 26px;
+    width: 26px;
+    font-size: 0.8rem;
+  }
+
+  .calendar-day-inactive {
+    height: 26px;
+    width: 26px;
+  }
+
+  .calendar-button::part(native) {
+    height: 26px;
+    width: 26px;
+  }
+
+  .calendar-days ion-row {
+    margin-bottom: 0.35rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .weekday-header ion-text {
+    font-size: 0.6rem;
+  }
+
+  .calendar-day {
+    height: 24px;
+  }
+
+  .calendar-day ion-button {
+    height: 22px;
+    width: 22px;
+    font-size: 0.7rem;
+  }
+
+  .calendar-day-inactive {
+    height: 22px;
+    width: 22px;
+  }
+
+  .calendar-button::part(native) {
+    height: 22px;
+    width: 22px;
+  }
+}

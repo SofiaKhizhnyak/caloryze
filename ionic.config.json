@@ -1,0 +1,7 @@
+{
+  "name": "caloryze",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
