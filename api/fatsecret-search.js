@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { query } = req.body;
+    const { query } = req;
 
     const clientId = process.env.FATSECRET_CLIENT_ID;
     const clientSecret = process.env.FATSECRET_CONSUMER_SECRET;
