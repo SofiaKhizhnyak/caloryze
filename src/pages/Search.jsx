@@ -54,7 +54,7 @@ function Search() {
 
     try {
       const response = await fetch("/api/fatsecret-search", {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
