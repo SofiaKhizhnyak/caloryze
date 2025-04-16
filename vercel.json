@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/fatsecret-search.js",
+      "src": "/api/fatsecret-search.js",
       "use": "@vercel/node"
     }
   ],
