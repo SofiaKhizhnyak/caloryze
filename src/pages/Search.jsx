@@ -54,11 +54,11 @@ function Search() {
 
     try {
       const response = await fetch(
-        "https://your-app.vercel.app/api/fatsecret-search",
+        "https://caloryze.vercel.app/api/fatsecret-search",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query }), // Pass query as part of the body
+          body: JSON.stringify({ query }),
         }
       );
 
