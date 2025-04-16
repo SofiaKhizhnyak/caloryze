@@ -6,11 +6,14 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return res.status(200).json({ data: searchResponse.data });
+    return res.status(200).json({
+      success: true,
+      data: searchResponse.data,
+    });
   }
 
   try {
-    const { query, max_results } = req.body;
+    const { query } = req.body;
 
     const clientId = process.env.FATSECRET_CLIENT_ID;
     const clientSecret = process.env.FATSECRET_CONSUMER_SECRET;
@@ -46,7 +49,7 @@ export default async function handler(req, res) {
           method: "foods.search",
           search_expression: query,
           format: "json",
-          max_results: 4,
+          max_results: 2,
         },
         headers: {
           Authorization: `Bearer ${token}`,
