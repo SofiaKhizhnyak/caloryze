@@ -2,19 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.cjs",
+      "src": "api/fatsecret-search.cjs",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1",
-      "methods": ["GET", "POST"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-      }
+      "src": "/api/fatsecret-search",
+      "dest": "/api/fatsecret-search.cjs"
     }
   ]
 }
