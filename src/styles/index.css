@@ -1,3 +1,6 @@
+* {
+  font-family: "Quicksand", sans-serif;
+}
 .day-with-data {
   position: relative;
 }
@@ -136,6 +139,20 @@ ion-card-title {
   justify-content: space-between;
   margin-top: 0.5rem;
 }
+
+.logout-button {
+  --color: var(--ion-color-medium);
+}
+
+.logout-button:hover {
+  --color: var(--ion-color-danger);
+}
+
+ion-thumbnail {
+  --size: 50px;
+  --border-radius: 14px;
+}
+
 @media (max-width: 450px) {
   .stacked-label {
     font-size: 1.2rem !important;

@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test.e2e": "cypress run",
     "test.unit": "vitest",
-    "lint": "eslint"
+    "lint": "eslint",
+    "start": "node server.js"
   },
   "dependencies": {
     "@capacitor/app": "7.0.1",
@@ -21,6 +22,11 @@
     "@ionic/react-router": "^8.5.0",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.8.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "firebase": "^11.6.0",
     "ionicons": "^7.4.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -50,5 +56,17 @@
     "vite": "~5.2.0",
     "vitest": "^0.34.6"
   },
-  "description": "Calorie tracker app built with React and Ionic for managing daily intake"
+  "description": "Calorie tracker app built with React and Ionic for managing daily intake",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SofiaKhizhnyak/caloryze.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SofiaKhizhnyak/caloryze/issues"
+  },
+  "homepage": "https://github.com/SofiaKhizhnyak/caloryze#readme"
 }

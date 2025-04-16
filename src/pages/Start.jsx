@@ -10,6 +10,7 @@ import {
   IonImg,
   IonToast,
   IonText,
+  IonLoading,
 } from "@ionic/react";
 import { thumbsUpOutline, alertCircleOutline } from "ionicons/icons";
 import { useAppContext } from "../contexts/AppContext";
@@ -18,7 +19,6 @@ import AddNewDay from "../components/AddNewDay";
 
 const Start = () => {
   const { isCurrentDayToday } = useAppContext();
-  const isCurrentDaySeted = isCurrentDayToday();
 
   const [showToast, setShowToast] = useState(false);
   const [showErrorToast, setShowErrorToast] = useState(false);
@@ -30,7 +30,7 @@ const Start = () => {
           <IonCard>
             <IonCardHeader>
               <IonCardTitle className="ion-text-center responsive-title">
-                {isCurrentDaySeted
+                {isCurrentDayToday()
                   ? "Your Day Is in Motion"
                   : "New Day, New Goal"}
               </IonCardTitle>
@@ -38,11 +38,11 @@ const Start = () => {
                 className="ion-text-center"
                 style={{ color: "#eb3903ff", fontSize: "0.9rem" }}
               >
-                {isCurrentDaySeted
+                {isCurrentDayToday()
                   ? "You’ve got this!"
                   : "Set your daily calorie goal and start tracking"}
               </IonCardSubtitle>
-              {isCurrentDaySeted && (
+              {isCurrentDayToday() && (
                 <IonText
                   color="dark"
                   className="ion-text-center"
@@ -53,7 +53,7 @@ const Start = () => {
               )}
             </IonCardHeader>
             <IonCardContent>
-              {isCurrentDaySeted ? (
+              {isCurrentDayToday() ? (
                 <ProgressCard />
               ) : (
                 <AddNewDay

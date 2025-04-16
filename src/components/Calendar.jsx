@@ -17,6 +17,7 @@ import {
   IonTitle,
   IonContent,
   IonButtons,
+  IonLoading,
 } from "@ionic/react";
 import {
   chevronBackOutline,
@@ -27,7 +28,6 @@ import {
 } from "ionicons/icons";
 import { useAppContext } from "../contexts/AppContext";
 import FoodItemList from "./FoodItemList";
-import { useRef } from "react";
 
 function Calendar() {
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -46,7 +46,8 @@ function Calendar() {
     "December",
   ];
 
-  const { days, currentDayId, getTodayString } = useAppContext();
+  const { days, currentDayId, isCurrentDayToday, getTodayString } =
+    useAppContext();
   const currentDate = new Date();
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
@@ -54,7 +55,8 @@ function Calendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
-  const today = getTodayString();
+
+  const todayString = getTodayString();
 
   const prevMonth = () => {
     setCurrentMonth((prevMonth) => {
@@ -94,8 +96,6 @@ function Calendar() {
       setSelectedDay(dayData);
       setIsModalOpen(true);
     }
-
-    console.log(dayData);
   };
 
   const getDayStatus = (dayNum) => {
@@ -104,10 +104,11 @@ function Calendar() {
       "0"
     )}-${String(dayNum).padStart(2, "0")}`;
 
-    const dayData = daysWithData.find((day) => day.date === formattedDate);
-    const isToday = formattedDate === today;
+    const isToday = formattedDate === todayString;
 
-    if (!dayData) return { hasData: false };
+    const dayData = daysWithData.find((day) => day.date === formattedDate);
+
+    if (!dayData) return { hasData: false, isToday };
 
     const isSuccess = dayData.totalCalories <= dayData.calorieGoal;
 
@@ -175,7 +176,7 @@ function Calendar() {
 
                     const dayStatus = isValidDay
                       ? getDayStatus(dayNum)
-                      : { hasData: false };
+                      : { hasData: false, isToday: false };
 
                     return (
                       <IonCol
@@ -187,20 +188,20 @@ function Calendar() {
                             title="Click to open day summary"
                             fill="clear"
                             color="medium"
-                            className={`calendar-button 
-                       ${dayStatus.isToday ? "current-day" : ""} 
-                       ${
-                         dayStatus.hasData && dayStatus.isPastDay
-                           ? dayStatus.isSuccess
-                             ? "past-day-success"
-                             : "past-day-fail"
-                           : ""
-                       }`}
+                            className={`calendar-button ${
+                              dayStatus.isToday
+                                ? "current-day"
+                                : dayStatus.hasData && dayStatus.isPastDay
+                                ? dayStatus.isSuccess
+                                  ? "past-day-success"
+                                  : "past-day-fail"
+                                : ""
+                            }`}
                             size="small"
                             disabled={!dayStatus.hasData && !dayStatus.isToday}
-                            onClick={() =>
-                              dayStatus.hasData && handleDayClick(dayNum)
-                            }
+                            onClick={() => {
+                              dayStatus.hasData && handleDayClick(dayNum);
+                            }}
                           >
                             {dayNum}
                           </IonButton>
@@ -269,25 +270,27 @@ function Calendar() {
                       </IonText>
                     </div>
 
-                    <IonText
-                      color={
-                        selectedDay.totalCalories > selectedDay.calorieGoal
-                          ? "danger"
-                          : "success"
-                      }
-                    >
-                      {selectedDay.totalCalories <= selectedDay.calorieGoal
-                        ? "You nailed it! "
-                        : "It was a rough day, huh? "}
-
-                      <IonIcon
-                        icon={
-                          selectedDay.totalCalories <= selectedDay.calorieGoal
-                            ? happyOutline
-                            : sadOutline
+                    {selectedDay.date !== todayString && (
+                      <IonText
+                        color={
+                          selectedDay.totalCalories > selectedDay.calorieGoal
+                            ? "danger"
+                            : "success"
                         }
-                      />
-                    </IonText>
+                      >
+                        {selectedDay.totalCalories <= selectedDay.calorieGoal
+                          ? "You nailed it! "
+                          : "It was a rough day, huh? "}
+
+                        <IonIcon
+                          icon={
+                            selectedDay.totalCalories <= selectedDay.calorieGoal
+                              ? happyOutline
+                              : sadOutline
+                          }
+                        />
+                      </IonText>
+                    )}
                   </div>
 
                   <div className="progress-bar-container">

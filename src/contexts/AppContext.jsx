@@ -1,26 +1,57 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+import { db } from "../firebase/firebase";
+import { useAuth } from "./AuthContext";
 
 const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
-  const [days, setDays] = useState(() => {
-    const storedDays = localStorage.getItem("caloryzeDays");
-    return storedDays ? JSON.parse(storedDays) : [];
-  });
+  const { currentUser } = useAuth();
+  const [days, setDays] = useState([]);
+  const [currentDayId, setCurrentDayId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [currentDayId, setCurrentDayId] = useState(() => {
-    const storedId = localStorage.getItem("caloryzeCurrentDayId");
-    return storedId ? JSON.parse(storedId) : null;
-  });
+  const getTodayString = () => new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-    localStorage.setItem("caloryzeDays", JSON.stringify(days));
-    localStorage.setItem("caloryzeCurrentDayId", JSON.stringify(currentDayId));
-  }, [days, currentDayId]);
+    if (!currentUser) {
+      setDays([]);
+      setCurrentDayId(null);
+      return;
+    }
 
-  // date YYYY-MM-DD
-  const getTodayString = () => new Date().toISOString().split("T")[0];
+    setLoading(true);
+
+    const q = query(
+      collection(db, "days"),
+      where("userId", "==", currentUser.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const userDays = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setDays(userDays);
+
+      const today = getTodayString();
+      const todayDoc = userDays.find((day) => day.date === today);
+      if (todayDoc) setCurrentDayId(todayDoc.id);
+
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [currentUser]);
 
   const getDayByDate = (dateString) =>
     days.find((day) => day.date === dateString) || null;
@@ -40,69 +71,56 @@ export const AppProvider = ({ children }) => {
     return currentDay?.date === today;
   };
 
-  const startNewDay = (calorieGoal) => {
+  const startNewDay = async (calorieGoal) => {
     const today = getTodayString();
     const newDay = {
-      id: Date.now(),
       date: today,
       calorieGoal: parseInt(calorieGoal, 10),
       totalCalories: 0,
       items: [],
+      userId: currentUser.uid,
     };
-
     setDays((prev) => [...prev, newDay]);
-    setCurrentDayId(newDay.id);
+    const docRef = await addDoc(collection(db, "days"), newDay);
+    setCurrentDayId(docRef.id);
   };
 
-  const addFoodItem = (name, calories) => {
+  const addFoodItem = async (name, calories) => {
+    const dayRef = doc(db, "days", currentDayId);
+    const day = getCurrentDay();
     const caloriesNum = parseInt(calories, 10);
-    setDays((prev) =>
-      prev.map((day) =>
-        day.id === currentDayId
-          ? {
-              ...day,
-              items: [...day.items, { name, calories: caloriesNum }],
-              totalCalories: day.totalCalories + caloriesNum,
-            }
-          : day
-      )
-    );
+    const updatedItems = [...day.items, { name, calories: caloriesNum }];
+
+    await updateDoc(dayRef, {
+      items: updatedItems,
+      totalCalories: day.totalCalories + caloriesNum,
+    });
   };
 
-  const handleDelete = (index) => {
-    setDays((prev) =>
-      prev.map((day) => {
-        if (day.id === currentDayId) {
-          const newItems = [...day.items];
-          const deleted = newItems.splice(index, 1)[0];
-          return {
-            ...day,
-            items: newItems,
-            totalCalories: day.totalCalories - parseInt(deleted.calories, 10),
-          };
-        }
-        return day;
-      })
-    );
+  const handleDelete = async (index) => {
+    const day = getCurrentDay();
+    const dayRef = doc(db, "days", currentDayId);
+    const newItems = [...day.items];
+    const deleted = newItems.splice(index, 1)[0];
+
+    await updateDoc(dayRef, {
+      items: newItems,
+      totalCalories: day.totalCalories - parseInt(deleted.calories, 10),
+    });
   };
 
-  const handleEdit = (index, newName, newCalories) => {
+  const handleEdit = async (index, newName, newCalories) => {
+    const day = getCurrentDay();
+    const dayRef = doc(db, "days", currentDayId);
+    const updatedItems = [...day.items];
+    const oldCal = parseInt(updatedItems[index].calories, 10);
     const newCal = parseInt(newCalories, 10);
-    setDays((prev) =>
-      prev.map((day) => {
-        if (day.id === currentDayId) {
-          const updatedItems = [...day.items];
-          const oldCal = parseInt(updatedItems[index].calories, 10);
-          updatedItems[index] = { name: newName, calories: newCal };
-          return {
-            ...day,
-            items: updatedItems,
-            totalCalories: day.totalCalories + (newCal - oldCal),
-          };
-        }
-        return day;
-      })
-    );
+    updatedItems[index] = { name: newName, calories: newCal };
+
+    await updateDoc(dayRef, {
+      items: updatedItems,
+      totalCalories: day.totalCalories + (newCal - oldCal),
+    });
   };
 
   const contextValue = {
@@ -118,6 +136,7 @@ export const AppProvider = ({ children }) => {
     getDayByDate,
     isTodayTracked,
     isCurrentDayToday,
+    loading,
   };
 
   return (
