@@ -2,18 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "vite.config.js",
+      "src": "package.json",
       "use": "@vercel/static-build"
     },
     {
-      "src": "api/fatsecret-search.js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/fatsecret-search",
-      "dest": "/api/fatsecret-search.js"
+      "src": "/api/(.*)",
+      "dest": "/api/$1.js"
     },
     {
       "src": "/(.*)",
