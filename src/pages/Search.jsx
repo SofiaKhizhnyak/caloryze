@@ -54,15 +54,11 @@ function Search() {
 
     try {
       const response = await fetch(
-        process.env.NODE_ENV === "development"
-          ? "/api/fatsecret-search" // Local for development
-          : "https://your-app.vercel.app/api/fatsecret-search", // Change this to your deployed URL
+        "https://your-app.vercel.app/api/fatsecret-search",
         {
-          method: "POST", // Ensure it's POST
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ query }), // Send the query
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query }), // Pass query as part of the body
         }
       );
 
