@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/fatsecret-search.cjs",
+      "src": "api/fatsecret-search.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/fatsecret-search",
-      "dest": "/api/fatsecret-search.cjs"
+      "dest": "/api/fatsecret-search.js"
     }
   ]
 }
