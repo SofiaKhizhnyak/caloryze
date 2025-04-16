@@ -1,3 +1,15 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/fatsecret-search.cjs",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/fatsecret-search",
+      "dest": "/api/fatsecret-search.cjs"
+    }
+  ]
 }
