@@ -53,13 +53,16 @@ function Search() {
     setResults([]);
 
     try {
-      const response = await fetch("/api/fatsecret-search", {
-        method: "POST", // Make sure this is POST
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query, max_results: 4 }), // Sending data in the body
-      });
+      const response = await fetch(
+        process.env.NODE_ENV === "development"
+          ? "/api/fatsecret-search"
+          : "https://your-app.vercel.app/api/fatsecret-search",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, max_results: 2 }),
+        }
+      );
 
       if (!response.ok) {
         let errorMessage = `API error: ${response.status}`;

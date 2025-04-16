@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return res.status(200).json({ data: searchResponse.data });
   }
 
   try {
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
           method: "foods.search",
           search_expression: query,
           format: "json",
-          max_results: max_results || 4,
+          max_results: 4,
         },
         headers: {
           Authorization: `Bearer ${token}`,
