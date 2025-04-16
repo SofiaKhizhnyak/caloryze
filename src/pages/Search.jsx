@@ -46,7 +46,7 @@ function Search() {
   };
 
   const handleSearch = async () => {
-    if (!query.trim()) return;
+    if (!query.trim()) return; // If query is empty, do nothing
 
     setLoading(true);
     setError("");
@@ -54,20 +54,18 @@ function Search() {
 
     try {
       const response = await fetch("/api/fatsecret-search", {
-        method: "GET",
+        method: "POST", // Make sure this is POST
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query, max_results: 4 }),
+        body: JSON.stringify({ query, max_results: 4 }), // Sending data in the body
       });
 
       if (!response.ok) {
         let errorMessage = `API error: ${response.status}`;
         try {
-          const errorData = await response.clone().text();
-          if (errorData) {
-            errorMessage += ` - ${errorData}`;
-          }
+          const errorData = await response.text();
+          errorMessage += ` - ${errorData}`;
         } catch (e) {}
         throw new Error(errorMessage);
       }
