@@ -2,14 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/**/*",
-      "use": "@vercel/static-build"
+      "src": "api/fatsecret-search.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
+      "src": "/api/fatsecret-search",
+      "dest": "/api/fatsecret-search.js"
     }
   ]
 }
