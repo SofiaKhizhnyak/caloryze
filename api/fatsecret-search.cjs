@@ -23,6 +23,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Missing API credentials" });
     }
 
+    // Get OAuth token
     const tokenResponse = await axios.post(
       "https://oauth.fatsecret.com/connect/token",
       new URLSearchParams({
@@ -41,6 +42,7 @@ export default async function handler(req, res) {
 
     const token = tokenResponse.data.access_token;
 
+    // Fetch food data using the token
     const searchResponse = await axios.get(
       "https://platform.fatsecret.com/rest/server.api",
       {
