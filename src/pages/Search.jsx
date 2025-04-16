@@ -64,13 +64,12 @@ function Search() {
       if (!response.ok) {
         let errorMessage = `API error: ${response.status}`;
         try {
-          const errorData = await response.text();
+          const errorData = await response.clone().text();
           if (errorData) {
             errorMessage += ` - ${errorData}`;
           }
-        } catch (e) {
-          setError("Failed to fetch nutrition data.");
-        }
+        } catch (e) {}
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
