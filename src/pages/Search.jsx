@@ -178,8 +178,12 @@ function Search() {
           {results.length > 0 && (
             <IonList>
               {results.map((item, index) => {
+                console.log("Food item:", item);
                 const foodName = item.food_name;
                 const calories = `${item.nf_calories} kcal`;
+                const servingQty = item?.serving_qty || "";
+                const servingUnit =
+                  item.serving_unit?.split("(")[0].trim() || "";
 
                 return (
                   <IonItem key={index}>
@@ -206,7 +210,14 @@ function Search() {
                       </strong>
                       {calories && (
                         <div style={{ marginTop: "4px", color: "#333" }}>
-                          {calories}
+                          {servingQty} {servingUnit}:{" "}
+                          <span
+                            style={{
+                              fontWeight: "500",
+                            }}
+                          >
+                            {calories}
+                          </span>
                         </div>
                       )}
                     </IonText>

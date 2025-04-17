@@ -57,6 +57,7 @@ ion-label {
   background: rgb(244, 255, 210);
   --highlight-color-focused: #e039013a;
   font-size: 16px;
+  color: rgb(6, 30, 34);
 }
 
 ion-toast {
