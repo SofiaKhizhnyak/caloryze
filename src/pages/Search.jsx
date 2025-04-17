@@ -168,7 +168,7 @@ function Search() {
                 onIonInput={(e) => setQuery(e.detail.value)}
                 debounce={300}
               />
-              <IonButton expand="block" onClick={handleSearch}>
+              <IonButton expand="block" onClick={() => handleSearch(query)}>
                 Search
               </IonButton>
 
