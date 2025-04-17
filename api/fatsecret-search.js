@@ -10,7 +10,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { query } = req;
+    let body = "";
+
+    await new Promise((resolve) => {
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => resolve());
+    });
+
+    const { query } = JSON.parse(body);
 
     const clientId = process.env.FATSECRET_CLIENT_ID;
     const clientSecret = process.env.FATSECRET_CONSUMER_SECRET;
