@@ -96,7 +96,7 @@ function Search() {
   };
  */
 
-  const handleSelectFood = async (foodName) => {
+  const handleSearch = async (foodName) => {
     setLoading(true);
     setError("");
     setResults([]);
