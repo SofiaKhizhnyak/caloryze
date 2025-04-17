@@ -45,7 +45,7 @@ function Search() {
     }
   };
 
-  const handleSearch = async () => {
+  /* const handleSearch = async () => {
     if (!query.trim()) return;
 
     setLoading(true);
@@ -90,6 +90,58 @@ function Search() {
     } catch (err) {
       console.error("Search error:", err);
       setError(`Failed to fetch nutrition data: ${err.message}`);
+    }
+
+    setLoading(false);
+  };
+ */
+
+  const handleSearch = async () => {
+    if (!query.trim()) return;
+
+    setLoading(true);
+    setError("");
+    setResults([]);
+
+    try {
+      const appId = import.meta.env.VITE_NUTRITIONIX_APP_ID;
+      const appKey = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
+
+      const response = await fetch(
+        `https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(
+          query
+        )}`,
+        {
+          headers: {
+            "x-app-id": appId,
+            "x-app-key": appKey,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+
+      const foodItems = data.common?.slice(0, 4) || [];
+
+      if (foodItems.length === 0) {
+        setError("No results found.");
+      } else {
+        const enriched = await Promise.all(
+          foodItems.map(async (item) => {
+            const image = await getImage(item.food_name);
+            return { name: item.food_name, image };
+          })
+        );
+        setResults(enriched);
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+      setError(`Failed to fetch food list: ${err.message}`);
     }
 
     setLoading(false);
