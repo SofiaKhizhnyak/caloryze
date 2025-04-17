@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   IonPage,
   IonContent,
@@ -26,12 +26,6 @@ function Search() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Reset results and error when query changes
-    setResults([]);
-    setError("");
-  }, [query]);
-
   const getImage = async (foodName) => {
     try {
       const response = await fetch(
@@ -46,8 +40,8 @@ function Search() {
     }
   };
 
-  const fetchNutritionData = async (searchQuery) => {
-    if (!searchQuery.trim()) return;
+  const fetchFoodData = async (foodName) => {
+    if (!foodName.trim()) return;
 
     setLoading(true);
     setError("");
@@ -66,7 +60,7 @@ function Search() {
             "x-app-id": appId,
             "x-app-key": appKey,
           },
-          body: JSON.stringify({ query: searchQuery }),
+          body: JSON.stringify({ query: foodName }),
         }
       );
 
@@ -79,36 +73,27 @@ function Search() {
 
       if (!data.foods || data.foods.length === 0) {
         setError("No results found.");
-        return [];
+        return;
       }
 
-      // Enrich the food data with images
-      const enrichedFoods = await Promise.all(
+      const enriched = await Promise.all(
         data.foods.map(async (food) => {
           const image = await getImage(food.food_name);
           return { ...food, image };
         })
       );
 
-      return enrichedFoods;
+      setResults(enriched);
     } catch (err) {
       console.error("Nutrition fetch error:", err);
       setError(`Failed to fetch nutrition info: ${err.message}`);
-      return [];
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
-  const handleSearch = async () => {
-    const foodResults = await fetchNutritionData(query);
-    setResults(foodResults);
-  };
-
-  const handleSelectFood = async (foodName) => {
-    const foodResults = await fetchNutritionData(foodName);
-    setResults(foodResults);
-  };
+  const handleSearch = () => fetchFoodData(query);
+  const handleSelectFood = (foodName) => fetchFoodData(foodName);
 
   return (
     <IonPage>
@@ -159,25 +144,38 @@ function Search() {
               )}
             </IonCardContent>
           </IonCard>
+
           {results.length > 0 && (
             <IonList>
-              {results.map((item, index) => (
-                <IonItem key={index}>
-                  {item.image && (
-                    <IonThumbnail slot="start">
-                      <img src={item.image} alt={item.food_name} />
-                    </IonThumbnail>
-                  )}
-                  <IonText>
-                    <strong style={{ color: "orangered" }}>
-                      {item.food_name}
-                    </strong>
-                    <div style={{ marginTop: "4px", color: "#333" }}>
-                      {item.nf_calories} kcal
-                    </div>
-                  </IonText>
-                </IonItem>
-              ))}
+              {results.map((item, index) => {
+                const isFullInfo = item.nf_calories !== undefined;
+                const foodName = item.food_name || item.name;
+                const calories = isFullInfo ? `${item.nf_calories} kcal` : null;
+
+                return (
+                  <IonItem
+                    key={index}
+                    button={!isFullInfo}
+                    onClick={
+                      !isFullInfo ? () => handleSelectFood(foodName) : undefined
+                    }
+                  >
+                    {item.image && (
+                      <IonThumbnail slot="start">
+                        <img src={item.image} alt={foodName} />
+                      </IonThumbnail>
+                    )}
+                    <IonText>
+                      <strong style={{ color: "orangered" }}>{foodName}</strong>
+                      {calories && (
+                        <div style={{ marginTop: "4px", color: "#333" }}>
+                          {calories}
+                        </div>
+                      )}
+                    </IonText>
+                  </IonItem>
+                );
+              })}
             </IonList>
           )}
         </div>
