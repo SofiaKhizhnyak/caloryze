@@ -77,7 +77,7 @@ function Search() {
       }
 
       const enriched = await Promise.all(
-        data.foods.map(async (food) => {
+        data.foods.slice(0, 4).map(async (food) => {
           const image = await getImage(food.food_name);
           return { ...food, image };
         })
