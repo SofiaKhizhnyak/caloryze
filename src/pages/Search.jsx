@@ -27,6 +27,7 @@ function Search() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Reset results and error when query changes
     setResults([]);
     setError("");
   }, [query]);
@@ -45,8 +46,8 @@ function Search() {
     }
   };
 
-  /* const handleSearch = async () => {
-    if (!query.trim()) return;
+  const fetchNutritionData = async (searchQuery) => {
+    if (!searchQuery.trim()) return;
 
     setLoading(true);
     setError("");
@@ -65,7 +66,7 @@ function Search() {
             "x-app-id": appId,
             "x-app-key": appKey,
           },
-          body: JSON.stringify({ query }),
+          body: JSON.stringify({ query: searchQuery }),
         }
       );
 
@@ -78,62 +79,35 @@ function Search() {
 
       if (!data.foods || data.foods.length === 0) {
         setError("No results found.");
-      } else {
-        const enriched = await Promise.all(
-          data.foods.map(async (item) => {
-            const image = await getImage(item.food_name);
-            return { ...item, image };
-          })
-        );
-        setResults(enriched);
+        return [];
       }
-    } catch (err) {
-      console.error("Search error:", err);
-      setError(`Failed to fetch nutrition data: ${err.message}`);
-    }
 
-    setLoading(false);
-  };
- */
-
-  const handleSearch = async (foodName) => {
-    setLoading(true);
-    setError("");
-    setResults([]);
-
-    try {
-      const appId = import.meta.env.VITE_NUTRITIONIX_APP_ID;
-      const appKey = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
-
-      const response = await fetch(
-        "https://trackapi.nutritionix.com/v2/natural/nutrients",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-app-id": appId,
-            "x-app-key": appKey,
-          },
-          body: JSON.stringify({ query: foodName }),
-        }
+      // Enrich the food data with images
+      const enrichedFoods = await Promise.all(
+        data.foods.map(async (food) => {
+          const image = await getImage(food.food_name);
+          return { ...food, image };
+        })
       );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API error: ${response.status} - ${errorText}`);
-      }
-
-      const data = await response.json();
-      const food = data.foods[0]; // Get first item
-
-      const image = await getImage(food.food_name);
-      setResults([{ ...food, image }]);
+      return enrichedFoods;
     } catch (err) {
       console.error("Nutrition fetch error:", err);
       setError(`Failed to fetch nutrition info: ${err.message}`);
+      return [];
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
+  const handleSearch = async () => {
+    const foodResults = await fetchNutritionData(query);
+    setResults(foodResults);
+  };
+
+  const handleSelectFood = async (foodName) => {
+    const foodResults = await fetchNutritionData(foodName);
+    setResults(foodResults);
   };
 
   return (
@@ -168,7 +142,7 @@ function Search() {
                 onIonInput={(e) => setQuery(e.detail.value)}
                 debounce={300}
               />
-              <IonButton expand="block" onClick={() => handleSearch(query)}>
+              <IonButton expand="block" onClick={handleSearch}>
                 Search
               </IonButton>
 
@@ -185,35 +159,25 @@ function Search() {
               )}
             </IonCardContent>
           </IonCard>
-          {results && (
+          {results.length > 0 && (
             <IonList>
-              {results.map((item, index) => {
-                const isFullInfo = item.nf_calories !== undefined;
-                const foodName = item.food_name || item.name;
-                const calories = isFullInfo ? `${item.nf_calories} kcal` : null;
-
-                return (
-                  <IonItem
-                    key={index}
-                    button={!isFullInfo}
-                    onClick={() => !isFullInfo && handleSelectFood(foodName)}
-                  >
-                    {item.image && (
-                      <IonThumbnail slot="start">
-                        <img src={item.image} alt={foodName} />
-                      </IonThumbnail>
-                    )}
-                    <IonText>
-                      <strong style={{ color: "orangered" }}>{foodName}</strong>
-                      {calories && (
-                        <div style={{ marginTop: "4px", color: "#333" }}>
-                          {calories}
-                        </div>
-                      )}
-                    </IonText>
-                  </IonItem>
-                );
-              })}
+              {results.map((item, index) => (
+                <IonItem key={index}>
+                  {item.image && (
+                    <IonThumbnail slot="start">
+                      <img src={item.image} alt={item.food_name} />
+                    </IonThumbnail>
+                  )}
+                  <IonText>
+                    <strong style={{ color: "orangered" }}>
+                      {item.food_name}
+                    </strong>
+                    <div style={{ marginTop: "4px", color: "#333" }}>
+                      {item.nf_calories} kcal
+                    </div>
+                  </IonText>
+                </IonItem>
+              ))}
             </IonList>
           )}
         </div>
