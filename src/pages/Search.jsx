@@ -199,8 +199,9 @@ function Search() {
           {results && (
             <IonList>
               {results.map((item, index) => {
-                const foodName = item.food_name;
-                const calories = `${item.nf_calories} kcal`;
+                const isFullInfo = item.nf_calories !== undefined;
+                const foodName = item.food_name || item.name;
+                const calories = isFullInfo ? `${item.nf_calories} kcal` : null;
 
                 return (
                   <IonItem key={index}>
