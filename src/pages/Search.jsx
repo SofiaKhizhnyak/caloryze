@@ -76,8 +76,11 @@ function Search() {
         return;
       }
 
+      // Limit to maximum 4 results
+      const limitedFoods = data.foods.slice(0, 4);
+
       const enriched = await Promise.all(
-        data.foods.slice(0, 4).map(async (food) => {
+        limitedFoods.map(async (food) => {
           const image = await getImage(food.food_name);
           return { ...food, image };
         })
