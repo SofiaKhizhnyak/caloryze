@@ -96,9 +96,7 @@ function Search() {
   };
  */
 
-  const handleSearch = async () => {
-    if (!query.trim()) return;
-
+  const handleSelectFood = async (foodName) => {
     setLoading(true);
     setError("");
     setResults([]);
@@ -108,14 +106,15 @@ function Search() {
       const appKey = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
 
       const response = await fetch(
-        `https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(
-          query
-        )}`,
+        "https://trackapi.nutritionix.com/v2/natural/nutrients",
         {
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
             "x-app-id": appId,
             "x-app-key": appKey,
           },
+          body: JSON.stringify({ query: foodName }),
         }
       );
 
@@ -125,23 +124,13 @@ function Search() {
       }
 
       const data = await response.json();
+      const food = data.foods[0]; // Get first item
 
-      const foodItems = data.common?.slice(0, 4) || [];
-
-      if (foodItems.length === 0) {
-        setError("No results found.");
-      } else {
-        const enriched = await Promise.all(
-          foodItems.map(async (item) => {
-            const image = await getImage(item.food_name);
-            return { name: item.food_name, image };
-          })
-        );
-        setResults(enriched);
-      }
+      const image = await getImage(food.food_name);
+      setResults([{ ...food, image }]);
     } catch (err) {
-      console.error("Search error:", err);
-      setError(`Failed to fetch food list: ${err.message}`);
+      console.error("Nutrition fetch error:", err);
+      setError(`Failed to fetch nutrition info: ${err.message}`);
     }
 
     setLoading(false);
@@ -204,17 +193,23 @@ function Search() {
                 const calories = isFullInfo ? `${item.nf_calories} kcal` : null;
 
                 return (
-                  <IonItem key={index}>
+                  <IonItem
+                    key={index}
+                    button={!isFullInfo}
+                    onClick={() => !isFullInfo && handleSelectFood(foodName)}
+                  >
                     {item.image && (
                       <IonThumbnail slot="start">
                         <img src={item.image} alt={foodName} />
                       </IonThumbnail>
                     )}
                     <IonText>
-                      <strong style={{ color: "orangered" }}>
-                        {foodName}{" "}
-                      </strong>{" "}
-                      {calories}
+                      <strong style={{ color: "orangered" }}>{foodName}</strong>
+                      {calories && (
+                        <div style={{ marginTop: "4px", color: "#333" }}>
+                          {calories}
+                        </div>
+                      )}
                     </IonText>
                   </IonItem>
                 );
