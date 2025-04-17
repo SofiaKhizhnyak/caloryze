@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonPage,
   IonContent,
@@ -16,7 +16,7 @@ import {
   IonCardSubtitle,
   IonIcon,
 } from "@ionic/react";
-import { fastFoodOutline } from "ionicons/icons";
+import { fastFoodOutline, restaurantOutline } from "ionicons/icons";
 
 const PIXABAY_KEY = "49740266-5bf466adedb64a71dae43ea83";
 
@@ -25,6 +25,11 @@ function Search() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setResults([]);
+    setError("");
+  }, [query]);
 
   const getImage = async (foodName) => {
     try {
@@ -39,9 +44,8 @@ function Search() {
       return null;
     }
   };
-
-  const fetchFoodData = async (foodName) => {
-    if (!foodName.trim()) return;
+  const searchFoods = async (searchQuery) => {
+    if (!searchQuery.trim()) return;
 
     setLoading(true);
     setError("");
@@ -51,52 +55,75 @@ function Search() {
       const appId = import.meta.env.VITE_NUTRITIONIX_APP_ID;
       const appKey = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
 
-      const response = await fetch(
-        "https://trackapi.nutritionix.com/v2/natural/nutrients",
+      const instantRes = await fetch(
+        `https://trackapi.nutritionix.com/v2/search/instant?query=${encodeURIComponent(
+          searchQuery
+        )}`,
         {
-          method: "POST",
           headers: {
             "Content-Type": "application/json",
             "x-app-id": appId,
             "x-app-key": appKey,
           },
-          body: JSON.stringify({ query: foodName }),
         }
       );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API error: ${response.status} - ${errorText}`);
+      if (!instantRes.ok) {
+        const errorText = await instantRes.text();
+        throw new Error(`API error: ${instantRes.status} - ${errorText}`);
       }
 
-      const data = await response.json();
+      const instantData = await instantRes.json();
+      const common = instantData.common;
 
-      if (!data.foods || data.foods.length === 0) {
+      if (!common || common.length === 0) {
         setError("No results found.");
         return;
       }
 
-      // Limit to maximum 4 results
-      const limitedFoods = data.foods.slice(0, 4);
+      const topFoods = common.slice(0, 4);
 
       const enriched = await Promise.all(
-        limitedFoods.map(async (food) => {
+        topFoods.map(async (food) => {
+          // Get nutrition info
+          const nutriRes = await fetch(
+            "https://trackapi.nutritionix.com/v2/natural/nutrients",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-app-id": appId,
+                "x-app-key": appKey,
+              },
+              body: JSON.stringify({ query: food.food_name }),
+            }
+          );
+
+          let calories = null;
+          if (nutriRes.ok) {
+            const nutriData = await nutriRes.json();
+            calories = nutriData.foods?.[0]?.nf_calories || null;
+          }
+
           const image = await getImage(food.food_name);
-          return { ...food, image };
+          return {
+            ...food,
+            image,
+            nf_calories: calories,
+          };
         })
       );
 
       setResults(enriched);
     } catch (err) {
-      console.error("Nutrition fetch error:", err);
-      setError(`Failed to fetch nutrition info: ${err.message}`);
+      console.error("Search error:", err);
+      setError(`Failed to search for foods: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  const handleSearch = () => fetchFoodData(query);
-  const handleSelectFood = (foodName) => fetchFoodData(foodName);
+  const handleSearch = () => searchFoods(query);
 
   return (
     <IonPage>
@@ -151,25 +178,32 @@ function Search() {
           {results.length > 0 && (
             <IonList>
               {results.map((item, index) => {
-                const isFullInfo = item.nf_calories !== undefined;
-                const foodName = item.food_name || item.name;
-                const calories = isFullInfo ? `${item.nf_calories} kcal` : null;
+                const foodName = item.food_name;
+                const calories = `${item.nf_calories} kcal`;
 
                 return (
-                  <IonItem
-                    key={index}
-                    button={!isFullInfo}
-                    onClick={
-                      !isFullInfo ? () => handleSelectFood(foodName) : undefined
-                    }
-                  >
-                    {item.image && (
+                  <IonItem key={index}>
+                    {item.image ? (
                       <IonThumbnail slot="start">
                         <img src={item.image} alt={foodName} />
                       </IonThumbnail>
+                    ) : (
+                      <IonThumbnail slot="start" className="icon-thumbnail">
+                        <IonIcon
+                          icon={restaurantOutline}
+                          className="icon-fill"
+                        />
+                      </IonThumbnail>
                     )}
                     <IonText>
-                      <strong style={{ color: "orangered" }}>{foodName}</strong>
+                      <strong
+                        style={{
+                          color: "orangered",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {foodName}
+                      </strong>
                       {calories && (
                         <div style={{ marginTop: "4px", color: "#333" }}>
                           {calories}

@@ -153,6 +153,19 @@ ion-thumbnail {
   --border-radius: 14px;
 }
 
+.icon-thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+}
+
+.icon-fill {
+  width: 90%;
+  height: 90%;
+  font-size: 100%;
+}
+
 @media (max-width: 450px) {
   .stacked-label {
     font-size: 1.2rem !important;
