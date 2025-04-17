@@ -46,39 +46,41 @@ function Search() {
   };
 
   const handleSearch = async () => {
-    if (!query.trim()) return; // If query is empty, do nothing
+    if (!query.trim()) return;
 
     setLoading(true);
     setError("");
     setResults([]);
 
     try {
+      const appId = import.meta.env.VITE_NUTRITIONIX_APP_ID;
+      const appKey = import.meta.env.VITE_NUTRITIONIX_APP_KEY;
+
       const response = await fetch(
-        "https://caloryze.vercel.app/api/fatsecret-search",
+        "https://trackapi.nutritionix.com/v2/natural/nutrients",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "x-app-id": appId,
+            "x-app-key": appKey,
+          },
           body: JSON.stringify({ query }),
         }
       );
 
       if (!response.ok) {
-        let errorMessage = `API error: ${response.status}`;
-        try {
-          const errorData = await response.text();
-          errorMessage += ` - ${errorData}`;
-        } catch (e) {}
-        throw new Error(errorMessage);
+        const errorText = await response.text();
+        throw new Error(`API error: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      const foods = data.foods?.food;
 
-      if (!foods || foods.length === 0) {
+      if (!data.foods || data.foods.length === 0) {
         setError("No results found.");
       } else {
         const enriched = await Promise.all(
-          (Array.isArray(foods) ? foods : [foods]).map(async (item) => {
+          data.foods.map(async (item) => {
             const image = await getImage(item.food_name);
             return { ...item, image };
           })
@@ -146,7 +148,7 @@ function Search() {
             <IonList>
               {results.map((item, index) => {
                 const foodName = item.food_name;
-                const calories = item.food_description?.split("|")[0].trim();
+                const calories = `${item.nf_calories} kcal`;
 
                 return (
                   <IonItem key={index}>

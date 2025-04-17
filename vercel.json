@@ -4,17 +4,9 @@
     {
       "src": "package.json",
       "use": "@vercel/static-build"
-    },
-    {
-      "src": "api/fatsecret-search.js",
-      "use": "@vercel/node"
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/fatsecret-search.js"
-    },
     {
       "src": "/(.*)",
       "dest": "/$1"
