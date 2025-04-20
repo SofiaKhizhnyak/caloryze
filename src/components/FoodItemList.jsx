@@ -55,8 +55,8 @@ const FoodItemList = ({
 
   return (
     <div className="food-list-virtual-container">
-      <IonContent className="ion-padding-horizontal-none">
-        <IonList>
+      <IonContent className="ion-padding-horizontal-none" fullscreen={true}>
+        <IonList className="food-list-pad ">
           {items.map((item, index) => (
             <IonItem key={index} className="food-item">
               <IonGrid>

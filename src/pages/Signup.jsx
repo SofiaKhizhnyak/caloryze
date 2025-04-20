@@ -4,7 +4,7 @@ import {
   IonCard,
   IonCardHeader,
   IonCardContent,
-  IonTitle,
+  IonCardTitle,
   IonText,
   IonRouterLink,
 } from "@ionic/react";
@@ -35,7 +35,7 @@ function Signup() {
       <div className="centered-wrapper">
         <IonCard>
           <IonCardHeader>
-            <IonTitle className="ion-text-center">Sign Up</IonTitle>
+            <IonCardTitle className="ion-text-center">Sign Up</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
             <AuthForm onSubmit={handleSignup} buttonText="Sign Up" />

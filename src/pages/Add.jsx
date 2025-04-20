@@ -19,6 +19,7 @@ import {
   IonRow,
   IonCol,
   IonCardTitle,
+  IonCardContent,
 } from "@ionic/react";
 import {
   closeOutline,
@@ -94,18 +95,19 @@ const Add = () => {
     <IonPage>
       <IonContent className="tab-content">
         <div className="centered-wrapper">
-          <ProgressCard />
-
           <IonCard>
-            <IonCardTitle color="dark" className="custom-card-title">
-              Log you food here
-            </IonCardTitle>
+            <div className="add-header">
+              <IonCardTitle color="dark" className="add-card-title">
+                Log your food
+              </IonCardTitle>
+              <ProgressCard />
+            </div>
             <IonItem className="custom-input-item">
               <IonLabel
                 position="stacked"
+                className="input-ion-label"
                 style={{
                   color: "#e34400ff",
-                  fontSize: "1.5rem",
                   marginBottom: "2px",
                 }}
               >
@@ -121,10 +123,10 @@ const Add = () => {
                 onIonChange={(e) => setFood(e.detail.value)}
               ></IonInput>
               <IonLabel
+                className="input-ion-label"
                 position="stacked"
                 style={{
                   color: "#e34400ff",
-                  fontSize: "1.5rem",
                   marginBottom: "2px",
                 }}
               >
@@ -142,6 +144,7 @@ const Add = () => {
               ></IonInput>
             </IonItem>
             <IonButton
+              className="custom-button"
               expand="block"
               onClick={handleAddItem}
               disabled={showErrorToast || showToast}
@@ -184,7 +187,11 @@ const Add = () => {
           </IonHeader>
           <IonContent className="ion-padding">
             <IonItem>
-              <IonLabel position="stacked" style={{ color: "#e34400ff" }}>
+              <IonLabel
+                position="stacked"
+                className="input-ion-label"
+                style={{ color: "#e34400ff" }}
+              >
                 Food name:
               </IonLabel>
               <IonInput
@@ -194,7 +201,11 @@ const Add = () => {
               ></IonInput>
             </IonItem>
             <IonItem>
-              <IonLabel position="stacked" style={{ color: "#e34400ff" }}>
+              <IonLabel
+                className="input-ion-label"
+                position="stacked"
+                style={{ color: "#e34400ff" }}
+              >
                 Amount of calories:
               </IonLabel>
               <IonInput

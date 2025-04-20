@@ -1,5 +1,6 @@
 .progress-card {
   padding: 0;
+
   min-height: fit-content;
   width: 250px;
   border-radius: 10px;
@@ -31,4 +32,11 @@ ion-progress-bar {
   height: 0.5rem;
   border-radius: 10px;
   margin: 0.5rem 0;
+}
+ion-progress-bar::part(progress) {
+  background: #fe4400d6;
+}
+
+ion-progress-bar::part(track) {
+  background: #5c4b6449;
 }

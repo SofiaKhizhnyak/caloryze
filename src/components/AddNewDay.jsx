@@ -22,6 +22,7 @@ const AddNewDay = ({ setShowToast, setShowErrorToast, showErrorToast }) => {
     <>
       <IonItem className="custom-input-item">
         <IonLabel
+          className="input-ion-label"
           position="stacked"
           style={{
             color: "#e34400ff",
