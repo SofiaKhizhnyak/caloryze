@@ -243,14 +243,25 @@ function Calendar() {
             <>
               <IonCard>
                 <IonCardHeader>
-                  <IonCardTitle className="custom-card-title">
+                  <IonCardTitle
+                    className="custom-card-title"
+                    style={{ marginBottom: "0.7rem" }}
+                  >
                     Day Summary
                   </IonCardTitle>
-                  <IonCardSubtitle>
-                    <strong>Goal:</strong> {selectedDay.calorieGoal} calories
-                  </IonCardSubtitle>
                 </IonCardHeader>
                 <IonCardContent>
+                  <IonCardSubtitle
+                    style={{
+                      fontWeight: "600",
+                      color: "#d73900ff",
+                      letterSpacing: "0.5px",
+                      fontSize: "0.95rem",
+                      marginBottom: "0.2rem",
+                    }}
+                  >
+                    Goal: {selectedDay.calorieGoal} calories
+                  </IonCardSubtitle>
                   <div>
                     <div style={{ paddingBottom: " 0.3rem" }}>
                       <IonText color="medium">

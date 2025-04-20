@@ -130,15 +130,16 @@ function Search() {
       <IonContent>
         <div className="centered-wrapper">
           <IonCard>
-            <IonCardHeader>
+            <IonCardContent>
               <IonCardTitle className="ion-text-center">
                 Search Food
               </IonCardTitle>
+
               <IonCardSubtitle
                 className="ion-text-center"
                 style={{ color: "#eb3903ff", fontSize: "1rem" }}
               >
-                Enter a food to get its calorie details{" "}
+                Check food calorie details{" "}
                 <IonIcon
                   icon={fastFoodOutline}
                   style={{
@@ -148,8 +149,7 @@ function Search() {
                   }}
                 />
               </IonCardSubtitle>
-            </IonCardHeader>
-            <IonCardContent>
+
               <IonInput
                 className="custom-input"
                 placeholder="e.g. banana"
